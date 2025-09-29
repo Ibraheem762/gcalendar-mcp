@@ -70,6 +70,17 @@ def get_calendar_service():
     return build('calendar', 'v3', credentials=creds)
 
 # API Routes
+@app.get("/debug")
+async def debug_env():
+    """Debug endpoint to check environment variables"""
+    return {
+        "has_refresh_token": bool(os.environ.get('GOOGLE_REFRESH_TOKEN')),
+        "has_client_id": bool(os.environ.get('GOOGLE_CLIENT_ID')),
+        "has_client_secret": bool(os.environ.get('GOOGLE_CLIENT_SECRET')),
+        "client_id_preview": os.environ.get('GOOGLE_CLIENT_ID', 'NOT_SET')[:20] + "...",
+        "refresh_token_preview": os.environ.get('GOOGLE_REFRESH_TOKEN', 'NOT_SET')[:20] + "...",
+    }
+
 @app.get("/tools")
 async def list_tools():
     """List available tools"""
