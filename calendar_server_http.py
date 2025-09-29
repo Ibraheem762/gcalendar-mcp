@@ -9,6 +9,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Any, Dict, List
 from google.oauth2.credentials import Credentials
+from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 import uvicorn
@@ -47,6 +48,12 @@ def get_calendar_service():
             client_secret=client_secret,
             scopes=SCOPES
         )
+
+        # Force refresh the token
+        try:
+            creds.refresh(Request())
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Token refresh failed: {str(e)}")
     else:
         # Development mode: use local files
         # Load existing token
